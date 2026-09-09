@@ -10,6 +10,7 @@ export function AppLayout() {
         >
           <Link to="/">Home</Link>
           <Link to="/people">People</Link>
+          <Link to="/planets">Planets</Link>
         </nav>
       </header>
 
