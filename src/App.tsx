@@ -14,6 +14,7 @@ import { SpeciesDetailPage } from './pages/details/SpeciesDetailPage'
 import { VehicleDetailPage } from './pages/details/VehicleDetailPage'
 import { StarshipDetailPage } from './pages/details/StartshipDetailPage'
 import { PersonDetailPage } from './pages/details/PersonDetailPage'
+import { NotFoundPage } from './pages/NotFoundPage'
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
         <Route path="/starships" element={<StarshipsPage />} />
         <Route path="/starships/:id" element={<StarshipDetailPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   )
