@@ -1,6 +1,7 @@
 import { UserRound } from 'lucide-react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { formatMeasurement, formatValue } from '@/lib/formatters'
 
 import type { Person } from '@/types/swapi'
 
@@ -47,14 +48,4 @@ export function PeopleCard({ person }: PeopleCardProps) {
       </CardContent>
     </Card>
   )
-}
-
-function formatValue(value: string) {
-  return value === 'unknown' || value === 'n/a' ? '—' : value
-}
-
-function formatMeasurement(value: string, unit: string) {
-  const formattedValue = formatValue(value)
-
-  return formattedValue === '—' ? formattedValue : `${formattedValue} ${unit}`
 }

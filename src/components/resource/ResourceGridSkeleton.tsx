@@ -1,14 +1,18 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 
-export function PeopleListSkeleton() {
+type ResourceGridSkeletonProps = {
+  count?: number
+  label: string
+}
+
+export function ResourceGridSkeleton({ count = 10, label }: ResourceGridSkeletonProps) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {Array.from({ length: 10 }).map((_, index) => (
-        <Card key={index}>
+      {Array.from({ length: count }).map((_, index) => (
+        <Card key={index} aria-hidden="true">
           <CardHeader className="flex flex-row items-center gap-4">
             <Skeleton className="size-12 rounded-full" />
-
             <Skeleton className="h-6 w-36" />
           </CardHeader>
 
@@ -22,7 +26,7 @@ export function PeopleListSkeleton() {
       ))}
 
       <output className="sr-only" aria-live="polite">
-        Loading people...
+        {label}
       </output>
     </div>
   )

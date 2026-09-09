@@ -1,16 +1,35 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { Input } from '@/components/ui/input'
 
-type PeopleSearchProps = {
+type ResourceSearchProps = {
+  id: string
   initialValue: string
+  label: string
+  placeholder: string
   onSearch: (value: string) => void
+  debounceMs?: number
 }
 
-export function PeopleSearch({ initialValue, onSearch }: PeopleSearchProps) {
+export function ResourceSearch({
+  id,
+  initialValue,
+  label,
+  placeholder,
+  onSearch,
+  debounceMs = 350,
+}: ResourceSearchProps) {
   const [value, setValue] = useState(initialValue)
 
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current)
+      }
+    }
+  }, [])
 
   const handleChange = (nextValue: string) => {
     setValue(nextValue)
@@ -28,21 +47,21 @@ export function PeopleSearch({ initialValue, onSearch }: PeopleSearchProps) {
 
     debounceTimer.current = setTimeout(() => {
       onSearch(normalizedValue)
-    }, 350)
+    }, debounceMs)
   }
 
   return (
     <div className="max-w-md">
-      <label htmlFor="people-search" className="sr-only">
-        Search people
+      <label htmlFor={id} className="sr-only">
+        {label}
       </label>
 
       <Input
-        id="people-search"
+        id={id}
         type="search"
         value={value}
         onChange={(event) => handleChange(event.target.value)}
-        placeholder="Search people..."
+        placeholder={placeholder}
       />
     </div>
   )

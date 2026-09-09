@@ -1,50 +1,22 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import { useSearchParams } from 'react-router'
 
 import { getPeople } from '@/api/people'
-import { PeopleList } from '@/components/people/PeopleList'
-import { PeopleListSkeleton } from '@/components/people/PeopleListSkeleton'
-import { PeopleSearch } from '@/components/people/PeopleSearch'
+import { PeopleCard } from '@/components/people/PeopleCard'
+import { ResourceGrid } from '@/components/resource/ResourceGrid'
+import { ResourceGridSkeleton } from '@/components/resource/ResourceGridSkeleton'
+import { ResourcePagination } from '@/components/resource/ResourcePagination'
+import { ResourceSearch } from '@/components/resource/ResourceSearch'
 import { Button } from '@/components/ui/button'
+import { useResourceSearchParams } from '@/hooks/useResourceSearchParams'
 
 export function PeoplePage() {
-  const [searchParams, setSearchParams] = useSearchParams()
-
-  const pageParam = Number(searchParams.get('page') ?? '1')
-  const page = Number.isInteger(pageParam) && pageParam > 0 ? pageParam : 1
-  const search = searchParams.get('search') ?? ''
+  const { page, search, handleSearch, handlePageChange } = useResourceSearchParams()
 
   const { data, isPending, isError, error, isFetching, isPlaceholderData, refetch } = useQuery({
     queryKey: ['people', { page, search }],
     queryFn: ({ signal }) => getPeople({ signal, page, search }),
     placeholderData: keepPreviousData,
   })
-
-  const handleSearch = (value: string) => {
-    if (value === search) {
-      return
-    }
-
-    const params = new URLSearchParams(searchParams)
-
-    params.set('page', '1')
-
-    if (value) {
-      params.set('search', value)
-    } else {
-      params.delete('search')
-    }
-
-    setSearchParams(params)
-  }
-
-  const handlePageChange = (nextPage: number) => {
-    const params = new URLSearchParams(searchParams)
-
-    params.set('page', String(nextPage))
-
-    setSearchParams(params)
-  }
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-8 sm:px-6 lg:px-8">
@@ -54,11 +26,17 @@ export function PeoplePage() {
         <p className="text-muted-foreground mt-2">Explore characters from across the galaxy.</p>
       </header>
 
-      <PeopleSearch initialValue={search} onSearch={handleSearch} />
+      <ResourceSearch
+        id="people-search"
+        initialValue={search}
+        label="Search people"
+        placeholder="Search people..."
+        onSearch={handleSearch}
+      />
 
       <section className="mt-8 flex flex-1 flex-col" aria-label="People results">
         <div className="flex-1">
-          {isPending && <PeopleListSkeleton />}
+          {isPending && <ResourceGridSkeleton label="Loading people..." />}
 
           {isError && (
             <div role="alert">
@@ -75,7 +53,12 @@ export function PeoplePage() {
           {data && !isError && (
             <>
               {data.results.length > 0 ? (
-                <PeopleList people={data.results} isUpdating={isFetching} />
+                <ResourceGrid
+                  items={data.results}
+                  getKey={(person) => person.url}
+                  renderItem={(person) => <PeopleCard person={person} />}
+                  isUpdating={isFetching}
+                />
               ) : (
                 <p className="text-muted-foreground">No people found.</p>
               )}
@@ -84,40 +67,15 @@ export function PeoplePage() {
         </div>
 
         {data && !isError && (
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <p className="text-muted-foreground text-sm">Page {page}</p>
-
-              {isFetching && !isPending && (
-                <output className="text-muted-foreground text-sm" aria-live="polite">
-                  Updating...
-                </output>
-              )}
-            </div>
-
-            <nav
-              className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto"
-              aria-label="People pagination"
-            >
-              <Button
-                variant="outline"
-                className="min-h-11 w-full sm:w-auto"
-                disabled={!data.previous || isPlaceholderData}
-                onClick={() => handlePageChange(page - 1)}
-              >
-                Previous
-              </Button>
-
-              <Button
-                variant="outline"
-                className="min-h-11 w-full sm:w-auto"
-                disabled={!data.next || isPlaceholderData}
-                onClick={() => handlePageChange(page + 1)}
-              >
-                Next
-              </Button>
-            </nav>
-          </div>
+          <ResourcePagination
+            page={page}
+            hasPrevious={Boolean(data.previous)}
+            hasNext={Boolean(data.next)}
+            isUpdating={isFetching && !isPending}
+            disabled={isPlaceholderData}
+            ariaLabel="People pagination"
+            onPageChange={handlePageChange}
+          />
         )}
       </section>
     </main>

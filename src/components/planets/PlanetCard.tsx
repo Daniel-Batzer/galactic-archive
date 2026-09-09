@@ -1,6 +1,7 @@
 import { Orbit } from 'lucide-react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { formatMeasurement, formatNumber, formatValue } from '@/lib/formatters'
 
 import type { Planet } from '@/types/swapi'
 
@@ -47,26 +48,4 @@ export function PlanetCard({ planet }: PlanetCardProps) {
       </CardContent>
     </Card>
   )
-}
-
-function formatValue(value: string) {
-  return value === 'unknown' || value === 'n/a' ? '—' : value
-}
-
-function formatNumber(value: string) {
-  const formattedValue = formatValue(value)
-
-  if (formattedValue === '—') {
-    return formattedValue
-  }
-
-  const number = Number(value)
-
-  return Number.isNaN(number) ? formattedValue : new Intl.NumberFormat('en-US').format(number)
-}
-
-function formatMeasurement(value: string, unit: string) {
-  const formattedValue = formatNumber(value)
-
-  return formattedValue === '—' ? formattedValue : `${formattedValue} ${unit}`
 }
