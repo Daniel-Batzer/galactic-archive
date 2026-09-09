@@ -6,6 +6,8 @@ The application provides searchable and paginated views for all major SWAPI reso
 
 The project was developed as a time-boxed frontend coding challenge with a focus on pragmatic architecture, accessibility, responsive UX and maintainability.
 
+**Live Demo:** [galactic-archive.vercel.app](https://galactic-archive.vercel.app)
+
 ## Features
 
 - Browse all six main SWAPI resource categories:
@@ -31,6 +33,8 @@ The project was developed as a time-boxed frontend coding challenge with a focus
 - Responsive desktop and mobile navigation
 - Overlay-style mobile navigation without layout shifts
 - Custom 404 page for unsupported routes
+- Resource-specific `404 Not Found` handling for missing API resources
+- Retry behavior for temporary API and network failures
 - Keyboard accessible navigation and focus states
 - Reduced-motion aware hover effects
 - Subtle Star Wars inspired visual theming
@@ -51,6 +55,7 @@ The project was developed as a time-boxed frontend coding challenge with a focus
 - Oxlint
 - Prettier
 - GitHub Actions
+- Vercel
 
 ## Getting Started
 
@@ -150,6 +155,7 @@ Shared resource helpers handle common SWAPI request patterns:
 - Individual resources by ID
 - Search parameters
 - AbortSignal support for request cancellation
+- Typed HTTP errors for status-aware error handling
 
 Resource-specific API modules provide a readable domain-facing interface such as:
 
@@ -171,6 +177,18 @@ https://swapi.py4e.com/api
 The API base URL can be changed through `VITE_SWAPI_BASE_URL`.
 
 For development, `VITE_SIMULATE_API_ERROR` can be enabled to manually verify error states.
+
+### Error Handling
+
+HTTP failures are represented through a typed `ApiError` that preserves the response status code.
+
+This allows the UI to distinguish between different failure types:
+
+- `404 Not Found` responses render a resource-specific not-found state
+- Other HTTP failures keep the standard error state with retry functionality
+- Simulated or network-level failures also use the retryable error state
+
+This keeps missing data separate from temporary technical failures.
 
 ### Server State
 
@@ -251,6 +269,7 @@ Examples include:
 - Decorative icons hidden from assistive technologies
 - Live loading messages
 - Semantic error alerts
+- Semantic status output for non-critical not-found states
 - Touch-friendly navigation controls
 - Reduced-motion aware hover effects
 
@@ -295,6 +314,19 @@ Production build
 ```
 
 This ensures the repository remains buildable and the basic quality checks remain green.
+
+## Deployment
+
+The application is deployed on Vercel.
+
+Because the project uses client-side routing, Vercel is configured with a SPA rewrite so that directly opened detail routes such as:
+
+```text
+/people/1
+/planets/1
+```
+
+resolve correctly even after a browser refresh.
 
 ## Technical Decisions
 
@@ -374,6 +406,7 @@ Within that timebox, priority was given to:
 7. Focused automated tests
 8. Continuous integration
 9. Lightweight visual polish
+10. Deployment
 
 Some possible features were intentionally left out.
 
@@ -405,7 +438,7 @@ Localizing only the surrounding application labels while leaving the underlying 
 
 ## Possible Future Improvements
 
-Given additional development time, the next steps would focus on deeper resource relationships, navigation context, testing and production-readiness.
+Given additional development time, the next steps would focus on deeper resource relationships, navigation context, observability, testing and production-readiness.
 
 ### Richer Resource Relationships
 
@@ -434,12 +467,6 @@ Luke Skywalker
 
 Directly opened detail URLs would still fall back to the relevant resource overview.
 
-### Improved API Error Handling
-
-The API client could expose typed HTTP errors so that missing resources, network failures and server errors can be handled independently.
-
-This would allow resource-specific `404 Not Found` states rather than treating every failed request as a generic API error.
-
 ### Additional Integration Testing
 
 Further tests could cover:
@@ -451,15 +478,35 @@ Further tests could cover:
 - Mobile navigation
 - Direct detail-page navigation
 - Empty search results
+- Resource-specific 404 handling
+
+### Observability and Product Metrics
+
+For a production application, observability would be added to better understand both technical failures and how the application is actually used.
+
+Possible additions include:
+
+- Structured client-side logging
+- Centralized error monitoring
+- Performance monitoring and Web Vitals
+- API request latency and failure metrics
+- Privacy-conscious product analytics
+- Feature usage metrics
+- Monitoring of search and pagination usage
+- Tracking related-resource navigation
+- Monitoring retry and 404 frequency
+
+These metrics could help identify technical issues, validate feature usage and guide future product decisions without relying only on assumptions.
 
 ### Production Hardening
 
 For a production deployment, additional work could include:
 
-- Error and performance monitoring
 - Automated accessibility checks
 - Deployment previews
 - Persistent query caching
+- Runtime configuration
+- Stronger monitoring and alerting
 - Optional PWA support
 
 ## Time Spent
@@ -475,4 +522,5 @@ Approximately **7 hours** of implementation time, including:
 - Refactoring
 - Automated testing
 - CI configuration
+- Deployment
 - Documentation
