@@ -8,6 +8,7 @@ import { ResourceSearch } from '@/components/resource/ResourceSearch'
 import { SpeciesCard } from '@/components/species/SpeciesCard'
 import { Button } from '@/components/ui/button'
 import { useResourceSearchParams } from '@/hooks/useResourceSearchParams'
+import { ResourceCount } from '@/components/resource/ResourceCount'
 
 export function SpeciesPage() {
   const { page, search, handleSearch, handlePageChange } = useResourceSearchParams()
@@ -40,6 +41,7 @@ export function SpeciesPage() {
       />
 
       <section className="mt-8 flex flex-1 flex-col" aria-label="Species results">
+        {data && <ResourceCount count={data.count} label="species" />}
         <div className="flex-1">
           {isPending && <ResourceGridSkeleton label="Loading species..." />}
 

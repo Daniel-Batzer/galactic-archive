@@ -8,6 +8,7 @@ import { ResourcePagination } from '@/components/resource/ResourcePagination'
 import { ResourceSearch } from '@/components/resource/ResourceSearch'
 import { Button } from '@/components/ui/button'
 import { useResourceSearchParams } from '@/hooks/useResourceSearchParams'
+import { ResourceCount } from '@/components/resource/ResourceCount'
 
 export function FilmsPage() {
   const { page, search, handleSearch, handlePageChange } = useResourceSearchParams()
@@ -40,6 +41,7 @@ export function FilmsPage() {
       />
 
       <section className="mt-8 flex flex-1 flex-col" aria-label="Film results">
+        {data && <ResourceCount count={data.count} label="film" />}
         <div className="flex-1">
           {isPending && <ResourceGridSkeleton count={6} label="Loading films..." />}
 

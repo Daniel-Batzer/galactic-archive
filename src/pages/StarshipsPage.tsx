@@ -8,6 +8,7 @@ import { ResourceSearch } from '@/components/resource/ResourceSearch'
 import { StarshipCard } from '@/components/starships/StarshipCard'
 import { Button } from '@/components/ui/button'
 import { useResourceSearchParams } from '@/hooks/useResourceSearchParams'
+import { ResourceCount } from '@/components/resource/ResourceCount'
 
 export function StarshipsPage() {
   const { page, search, handleSearch, handlePageChange } = useResourceSearchParams()
@@ -40,6 +41,7 @@ export function StarshipsPage() {
       />
 
       <section className="mt-8 flex flex-1 flex-col" aria-label="Starship results">
+        {data && <ResourceCount count={data.count} label="starship" />}
         <div className="flex-1">
           {isPending && <ResourceGridSkeleton label="Loading starships..." />}
 

@@ -8,6 +8,7 @@ import { ResourcePagination } from '@/components/resource/ResourcePagination'
 import { ResourceSearch } from '@/components/resource/ResourceSearch'
 import { Button } from '@/components/ui/button'
 import { useResourceSearchParams } from '@/hooks/useResourceSearchParams'
+import { ResourceCount } from '@/components/resource/ResourceCount'
 
 export function PeoplePage() {
   const { page, search, handleSearch, handlePageChange } = useResourceSearchParams()
@@ -36,6 +37,7 @@ export function PeoplePage() {
 
       <section className="mt-8 flex flex-1 flex-col" aria-label="People results">
         <div className="flex-1">
+          {data && <ResourceCount count={data.count} label="character" />}
           {isPending && <ResourceGridSkeleton label="Loading people..." />}
 
           {isError && (

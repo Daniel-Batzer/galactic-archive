@@ -60,20 +60,33 @@ const resources: ResourceLink[] = [
 export function HomePage() {
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-10 sm:px-6 lg:px-8">
-      <header className="mb-10 max-w-2xl">
-        <p className="text-muted-foreground text-sm font-medium">Galactic Archive</p>
+      <section className="galaxy-hero relative overflow-hidden rounded-2xl border border-white/10 px-6 py-12 text-white shadow-sm sm:px-10 sm:py-16">
+        <div
+          className="pointer-events-none absolute inset-0 bg-linear-to-br from-transparent via-transparent to-black/40"
+          aria-hidden="true"
+        />
 
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
-          Explore a galaxy far, far away.
-        </h1>
+        <div className="relative max-w-2xl">
+          <p className="mb-3 text-xs font-semibold tracking-[0.3em] text-zinc-400 uppercase">
+            Galactic Archive
+          </p>
 
-        <p className="text-muted-foreground mt-4 text-lg leading-8">
-          Browse characters, worlds, films, starships, species and vehicles from the Star Wars
-          universe.
-        </p>
-      </header>
+          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
+            Explore a galaxy
+            <span className="block text-zinc-300">far, far away.</span>
+          </h1>
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-label="Archive categories">
+          <p className="mt-5 max-w-xl text-base leading-7 text-zinc-300 sm:text-lg">
+            Browse characters, worlds, films, starships, species and vehicles from across the Star
+            Wars universe.
+          </p>
+        </div>
+      </section>
+
+      <section
+        className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        aria-label="Archive categories"
+      >
         {resources.map(({ title, description, to, icon: Icon }) => (
           <Link
             key={to}
@@ -82,15 +95,12 @@ export function HomePage() {
           >
             <Card className="h-full transition-shadow duration-200 hover:shadow-sm motion-safe:transition-transform motion-safe:duration-200 motion-safe:hover:-translate-y-1">
               <CardContent className="flex h-full items-start gap-4">
-                <span
-                  className="bg-muted flex size-12 shrink-0 items-center justify-center rounded-full"
-                  aria-hidden="true"
-                >
-                  <Icon className="size-6" />
-                </span>
+                <div className="mb-4 flex size-10 items-center justify-center rounded-lg bg-muted">
+                  <Icon className="size-5" aria-hidden="true" />
+                </div>
 
                 <div>
-                  <h2 className="text-lg font-semibold">{title}</h2>
+                  <h2 className="font-semibold tracking-tight">{title}</h2>
 
                   <p className="text-muted-foreground mt-1 text-sm leading-6">{description}</p>
                 </div>

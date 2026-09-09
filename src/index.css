@@ -128,3 +128,31 @@
     @apply font-sans;
   }
 }
+
+.galaxy-hero {
+  background-color: #09090b;
+
+  background-image:
+    radial-gradient(circle at 75% 45%, rgb(90 100 160 / 0.12), transparent 35%),
+    radial-gradient(circle at 15% 25%, rgb(255 255 255 / 0.75) 0.8px, transparent 0.8px),
+    radial-gradient(circle at 75% 15%, rgb(255 255 255 / 0.55) 0.8px, transparent 0.8px),
+    radial-gradient(circle at 35% 75%, rgb(255 255 255 / 0.65) 0.8px, transparent 0.8px),
+    radial-gradient(circle at 85% 65%, rgb(255 255 255 / 0.45) 0.8px, transparent 0.8px),
+    radial-gradient(circle at 8% 80%, rgb(255 255 255 / 0.45) 0.8px, transparent 0.8px);
+
+  background-size:
+    100% 100%,
+    110px 110px,
+    170px 170px,
+    140px 140px,
+    200px 200px,
+    160px 160px;
+
+  background-position:
+    center,
+    0 0,
+    35px 20px,
+    70px 50px,
+    20px 80px,
+    90px 10px;
+}

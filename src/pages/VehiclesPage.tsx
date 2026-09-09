@@ -8,6 +8,7 @@ import { ResourceSearch } from '@/components/resource/ResourceSearch'
 import { Button } from '@/components/ui/button'
 import { VehicleCard } from '@/components/vehicles/VehicleCard'
 import { useResourceSearchParams } from '@/hooks/useResourceSearchParams'
+import { ResourceCount } from '@/components/resource/ResourceCount'
 
 export function VehiclesPage() {
   const { page, search, handleSearch, handlePageChange } = useResourceSearchParams()
@@ -40,6 +41,7 @@ export function VehiclesPage() {
       />
 
       <section className="mt-8 flex flex-1 flex-col" aria-label="Vehicle results">
+        {data && <ResourceCount count={data.count} label="vehicle" />}
         <div className="flex-1">
           {isPending && <ResourceGridSkeleton label="Loading vehicles..." />}
 
