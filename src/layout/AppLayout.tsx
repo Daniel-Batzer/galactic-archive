@@ -12,6 +12,7 @@ export function AppLayout() {
           <Link to="/people">People</Link>
           <Link to="/planets">Planets</Link>
           <Link to="/starships">Starships</Link>
+          <Link to="/films">Films</Link>
         </nav>
       </header>
 

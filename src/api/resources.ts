@@ -22,3 +22,7 @@ export function getResourceList<T>(
 
   return apiClient<SwapiPaginatedResponse<T>>(`/${resource}/?${params.toString()}`, signal)
 }
+
+export function getResourceById<T>(resource: string, id: string, signal?: AbortSignal) {
+  return apiClient<T>(`/${resource}/${id}/`, signal)
+}
