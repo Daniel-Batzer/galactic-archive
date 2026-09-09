@@ -13,6 +13,8 @@ export function AppLayout() {
           <Link to="/planets">Planets</Link>
           <Link to="/starships">Starships</Link>
           <Link to="/films">Films</Link>
+          <Link to="/species">Species</Link>
+          <Link to="/vehicles">Vehicles</Link>
         </nav>
       </header>
 

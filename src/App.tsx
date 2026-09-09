@@ -8,6 +8,8 @@ import { StarshipsPage } from '@/pages/StarshipsPage'
 import { PersonDetailPage } from './pages/PersonDetailPage'
 import { FilmsPage } from './pages/FilmsPage'
 import { FilmDetailPage } from '@/pages/FilmDetailPage'
+import { SpeciesPage } from './pages/SpeciesPage'
+import { VehiclesPage } from './pages/VehiclesPage'
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
         <Route path="/starships" element={<StarshipsPage />} />
         <Route path="/films" element={<FilmsPage />} />
         <Route path="/films/:id" element={<FilmDetailPage />} />
+        <Route path="/species" element={<SpeciesPage />} />
+        <Route path="/vehicles" element={<VehiclesPage />} />
       </Route>
     </Routes>
   )
