@@ -1,15 +1,18 @@
-import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, Orbit, UserRound } from 'lucide-react'
+import { useQueries, useQuery } from '@tanstack/react-query'
+import { ArrowLeft, Clapperboard, Orbit, UserRound } from 'lucide-react'
 import { Link, useParams } from 'react-router'
 import { cn } from '@/lib/utils'
 
 import { getPerson } from '@/api/people'
 import { getPlanet } from '@/api/planets'
+import { getFilm } from '@/api/films'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatMeasurement, formatValue } from '@/lib/formatters'
 import { getResourceId } from '@/lib/swapi'
+
+import { RelatedResource, RelatedResourceSkeleton } from '@/components/resource/RelatedResource'
 
 export function PersonDetailPage() {
   const { id } = useParams()
@@ -35,8 +38,20 @@ export function PersonDetailPage() {
   })
 
   const isHomeworldLoading = Boolean(homeworldId) && !homeworld && !isHomeworldError
-  const relatedResourceClassName =
-    'flex min-w-32 min-h-14 items-center gap-3 rounded-lg border px-3 py-2'
+
+  const filmIds =
+    person?.films.map(getResourceId).filter((filmId): filmId is string => Boolean(filmId)) ?? []
+
+  const filmQueries = useQueries({
+    queries: filmIds.map((filmId) => ({
+      queryKey: ['films', 'detail', filmId],
+      queryFn: ({ signal }: { signal: AbortSignal }) => getFilm(filmId, signal),
+    })),
+  })
+
+  const films = filmQueries.flatMap((query) => (query.data ? [query.data] : []))
+
+  const areFilmsError = filmQueries.length > 0 && filmQueries.some((query) => query.isError)
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4 py-8 sm:px-6 lg:px-8">
@@ -101,39 +116,62 @@ export function PersonDetailPage() {
                   <dt className="text-muted-foreground text-sm">Homeworld</dt>
 
                   <dd className="mt-2">
-                    {isHomeworldLoading && (
-                      <div className={relatedResourceClassName}>
-                        <Skeleton className="size-8 rounded-full" />
-
-                        <div className="space-y-1">
-                          <Skeleton className="h-3 w-10" />
-                          <Skeleton className="h-4 w-20" />
-                        </div>
-                      </div>
-                    )}
+                    {isHomeworldLoading && <RelatedResourceSkeleton />}
 
                     {isHomeworldError && (
                       <span className="text-muted-foreground text-sm">Unavailable</span>
                     )}
 
                     {homeworld && (
-                      <div className={cn('bg-muted/50', relatedResourceClassName)}>
-                        <span
-                          className="bg-background flex size-8 items-center justify-center rounded-full"
-                          aria-hidden="true"
-                        >
-                          <Orbit className="size-4" />
-                        </span>
-
-                        <div>
-                          <p className="text-muted-foreground text-xs">Planet</p>
-                          <p className="font-medium">{homeworld.name}</p>
-                        </div>
-                      </div>
+                      <RelatedResource icon={Orbit} label="Planet" name={homeworld.name} />
                     )}
                   </dd>
                 </div>
               </dl>
+            </CardContent>
+          </Card>
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Films</CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              {filmQueries.length > 0 && (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {filmQueries.map((query, index) => {
+                    const filmId = filmIds[index]
+
+                    if (query.isPending) {
+                      return <RelatedResourceSkeleton key={filmId} />
+                    }
+
+                    if (query.data) {
+                      return (
+                        <RelatedResource
+                          key={query.data.url}
+                          icon={Clapperboard}
+                          label={`Episode ${query.data.episode_id}`}
+                          name={query.data.title}
+                        />
+                      )
+                    }
+
+                    return null
+                  })}
+                </div>
+              )}
+
+              {areFilmsError && films.length === 0 && (
+                <p className="text-muted-foreground text-sm">
+                  Film information is currently unavailable.
+                </p>
+              )}
+
+              {areFilmsError && films.length > 0 && (
+                <p className="text-muted-foreground mt-3 text-sm">
+                  Some film information could not be loaded.
+                </p>
+              )}
             </CardContent>
           </Card>
         </>
