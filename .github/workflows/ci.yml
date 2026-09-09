@@ -1,21 +1,36 @@
-steps:
-  - name: Checkout repository
-    uses: actions/checkout@v7
+name: CI
 
-  - name: Setup Node.js
-    uses: actions/setup-node@v7
-    with:
-      node-version: 24
-      cache: npm
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
-  - name: Install dependencies
-    run: npm ci
+jobs:
+  quality:
+    runs-on: ubuntu-latest
 
-  - name: Check formatting
-    run: npm run format:check
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
 
-  - name: Lint
-    run: npm run lint
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
 
-  - name: Build
-    run: npm run build
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
