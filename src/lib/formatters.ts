@@ -31,3 +31,21 @@ export function formatDate(value: string) {
         day: 'numeric',
       }).format(date)
 }
+
+export function formatCredits(value: string) {
+  const formattedValue = formatNumber(value)
+
+  return formattedValue === '—' ? formattedValue : `${formattedValue} credits`
+}
+
+export function formatMass(value: string) {
+  const formattedValue = formatNumber(value)
+
+  return formattedValue === '—' ? formattedValue : `${formattedValue} kg`
+}
+
+export function formatSpeed(value: string) {
+  const formattedValue = formatNumber(value)
+
+  return formattedValue === '—' ? formattedValue : `${formattedValue} km/h`
+}
