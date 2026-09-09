@@ -88,7 +88,7 @@ export function PersonDetailPage() {
       {isPending && <DetailPageSkeleton fieldCount={7} label="Loading person details..." />}
 
       {isError && (
-        <DetailError resourceName="person" message={error.message} onRetry={() => void refetch()} />
+        <DetailError resourceName="person" error={error} onRetry={() => void refetch()} />
       )}
 
       {person && !isError && (

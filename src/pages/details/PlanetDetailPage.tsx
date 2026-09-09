@@ -30,7 +30,7 @@ export function PlanetDetailPage() {
       {isPending && <DetailPageSkeleton fieldCount={8} />}
 
       {isError && (
-        <DetailError resourceName="planet" message={error.message} onRetry={() => void refetch()} />
+        <DetailError resourceName="planet" error={error} onRetry={() => void refetch()} />
       )}
 
       {planet && !isError && (

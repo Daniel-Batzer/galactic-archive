@@ -37,11 +37,7 @@ export function VehicleDetailPage() {
       {isPending && <DetailPageSkeleton fieldCount={10} />}
 
       {isError && (
-        <DetailError
-          resourceName="vehicle"
-          message={error.message}
-          onRetry={() => void refetch()}
-        />
+        <DetailError resourceName="vehicle" error={error} onRetry={() => void refetch()} />
       )}
 
       {vehicle && !isError && (

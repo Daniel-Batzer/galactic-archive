@@ -37,11 +37,7 @@ export function StarshipDetailPage() {
       {isPending && <DetailPageSkeleton fieldCount={12} />}
 
       {isError && (
-        <DetailError
-          resourceName="starship"
-          message={error.message}
-          onRetry={() => void refetch()}
-        />
+        <DetailError resourceName="starship" error={error} onRetry={() => void refetch()} />
       )}
 
       {starship && !isError && (

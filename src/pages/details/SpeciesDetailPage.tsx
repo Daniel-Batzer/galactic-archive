@@ -30,11 +30,7 @@ export function SpeciesDetailPage() {
       {isPending && <DetailPageSkeleton fieldCount={8} />}
 
       {isError && (
-        <DetailError
-          resourceName="species"
-          message={error.message}
-          onRetry={() => void refetch()}
-        />
+        <DetailError resourceName="species" error={error} onRetry={() => void refetch()} />
       )}
 
       {species && !isError && (

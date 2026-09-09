@@ -31,9 +31,7 @@ export function FilmDetailPage() {
     <DetailPageLayout backTo="/films" backLabel="films">
       {isPending && <FilmDetailSkeleton />}
 
-      {isError && (
-        <DetailError resourceName="film" message={error.message} onRetry={() => void refetch()} />
-      )}
+      {isError && <DetailError resourceName="film" error={error} onRetry={() => void refetch()} />}
 
       {film && !isError && (
         <>
