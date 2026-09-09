@@ -1,22 +1,17 @@
-import { Link, Route, Routes } from 'react-router'
+import { Route, Routes } from 'react-router'
 
-import { HomePage } from './pages/HomePage'
-import { PeoplePage } from './pages/PeoplePage'
+import { AppLayout } from '@/layout/AppLayout'
+import { HomePage } from '@/pages/HomePage'
+import { PeoplePage } from '@/pages/PeoplePage'
 
 function App() {
   return (
-    <>
-      <nav>
-        <Link to="/">Home</Link>
-        {' | '}
-        <Link to="/people">People</Link>
-      </nav>
-
-      <Routes>
+    <Routes>
+      <Route element={<AppLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/people" element={<PeoplePage />} />
-      </Routes>
-    </>
+      </Route>
+    </Routes>
   )
 }
 

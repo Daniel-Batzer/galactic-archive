@@ -2,9 +2,10 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router'
 
 import { getPeople } from '@/api/people'
-import { Button } from '@/components/ui/button'
+import { PeopleList } from '@/components/people/PeopleList'
+import { PeopleListSkeleton } from '@/components/people/PeopleListSkeleton'
 import { PeopleSearch } from '@/components/people/PeopleSearch'
-import { PeopleListSkeleton } from '@/components/people/PeopleList'
+import { Button } from '@/components/ui/button'
 
 export function PeoplePage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -20,6 +21,10 @@ export function PeoplePage() {
   })
 
   const handleSearch = (value: string) => {
+    if (value === search) {
+      return
+    }
+
     const params = new URLSearchParams(searchParams)
 
     params.set('page', '1')
@@ -41,83 +46,80 @@ export function PeoplePage() {
     setSearchParams(params)
   }
 
-  if (isPending) {
-    return (
-      <main>
-        <h1>People</h1>
-
-        <PeopleSearch key={search} initialValue={search} onSearch={handleSearch} />
-
-        <PeopleListSkeleton />
-      </main>
-    )
-  }
-
-  if (isError) {
-    return (
-      <main>
-        <h1>People</h1>
-
-        <PeopleSearch key={search} initialValue={search} onSearch={handleSearch} />
-
-        <div className="mt-6" role="alert">
-          <p>Something went wrong while loading people.</p>
-
-          <p className="text-muted-foreground mt-1 text-sm">{error.message}</p>
-
-          <Button className="mt-4" onClick={() => void refetch()}>
-            Try again
-          </Button>
-        </div>
-      </main>
-    )
-  }
-
   return (
-    <main>
-      <h1>People</h1>
+    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-8 sm:px-6 lg:px-8">
+      <header className="mb-8">
+        <h1 className="text-3xl font-semibold tracking-tight">People</h1>
+
+        <p className="text-muted-foreground mt-2">Explore characters from across the galaxy.</p>
+      </header>
 
       <PeopleSearch initialValue={search} onSearch={handleSearch} />
 
-      <div className="mt-6">
-        {data.results.length > 0 ? (
-          <ul className="space-y-2" aria-busy={isFetching}>
-            {data.results.map((person) => (
-              <li key={person.url}>{person.name}</li>
-            ))}
-          </ul>
-        ) : (
-          <p>No people found.</p>
+      <section className="mt-8 flex flex-1 flex-col" aria-label="People results">
+        <div className="flex-1">
+          {isPending && <PeopleListSkeleton />}
+
+          {isError && (
+            <div role="alert">
+              <p className="font-medium">Something went wrong while loading people.</p>
+
+              <p className="text-muted-foreground mt-1 text-sm">{error.message}</p>
+
+              <Button className="mt-4" onClick={() => void refetch()}>
+                Try again
+              </Button>
+            </div>
+          )}
+
+          {data && !isError && (
+            <>
+              {data.results.length > 0 ? (
+                <PeopleList people={data.results} isUpdating={isFetching} />
+              ) : (
+                <p className="text-muted-foreground">No people found.</p>
+              )}
+            </>
+          )}
+        </div>
+
+        {data && !isError && (
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <p className="text-muted-foreground text-sm">Page {page}</p>
+
+              {isFetching && !isPending && (
+                <output className="text-muted-foreground text-sm" aria-live="polite">
+                  Updating...
+                </output>
+              )}
+            </div>
+
+            <nav
+              className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto"
+              aria-label="People pagination"
+            >
+              <Button
+                variant="outline"
+                className="min-h-11 w-full sm:w-auto"
+                disabled={!data.previous || isPlaceholderData}
+                onClick={() => handlePageChange(page - 1)}
+              >
+                Previous
+              </Button>
+
+              <Button
+                variant="outline"
+                className="min-h-11 w-full sm:w-auto"
+                disabled={!data.next || isPlaceholderData}
+                onClick={() => handlePageChange(page + 1)}
+              >
+                Next
+              </Button>
+            </nav>
+          </div>
         )}
-      </div>
-
-      <div className="mt-6 flex items-center gap-3">
-        <p>Page {page}</p>
-
-        {isFetching && (
-          <output className="text-muted-foreground text-sm" aria-live="polite">
-            Updating...
-          </output>
-        )}
-      </div>
-
-      <nav className="mt-3 flex gap-2" aria-label="People pagination">
-        <Button
-          variant="outline"
-          disabled={!data.previous || isPlaceholderData}
-          onClick={() => handlePageChange(page - 1)}
-        >
-          Previous
-        </Button>
-
-        <Button
-          variant="outline"
-          disabled={!data.next || isPlaceholderData}
-          onClick={() => handlePageChange(page + 1)}
-        >
-          Next
-        </Button>
-      </nav>
+      </section>
     </main>
   )
 }

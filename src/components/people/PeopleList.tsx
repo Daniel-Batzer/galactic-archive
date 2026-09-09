@@ -1,15 +1,18 @@
-import { Skeleton } from '@/components/ui/skeleton'
+import { PeopleCard } from '@/components/people/PeopleCard'
 
-export function PeopleListSkeleton() {
+import type { Person } from '@/types/swapi'
+
+type PeopleListProps = {
+  people: Person[]
+  isUpdating?: boolean
+}
+
+export function PeopleList({ people, isUpdating = false }: PeopleListProps) {
   return (
-    <div className="mt-6 space-y-2">
-      {Array.from({ length: 10 }).map((_, index) => (
-        <Skeleton key={index} className="h-6 w-48" />
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" aria-busy={isUpdating}>
+      {people.map((person) => (
+        <PeopleCard key={person.url} person={person} />
       ))}
-
-      <output className="sr-only" aria-live="polite">
-        Loading people...
-      </output>
     </div>
   )
 }
