@@ -1,18 +1,20 @@
 import { useQueries, useQuery } from '@tanstack/react-query'
-import { ArrowLeft, Clapperboard, Orbit, UserRound } from 'lucide-react'
+import { ArrowLeft, CarFront, Clapperboard, Dna, Orbit, Rocket, UserRound } from 'lucide-react'
 import { Link, useParams } from 'react-router'
-import { cn } from '@/lib/utils'
 
+import { getFilm } from '@/api/films'
 import { getPerson } from '@/api/people'
 import { getPlanet } from '@/api/planets'
-import { getFilm } from '@/api/films'
+import { getSpeciesById } from '@/api/species'
+import { getStarship } from '@/api/starships'
+import { getVehicle } from '@/api/vehicles'
+import { RelatedResource, RelatedResourceSkeleton } from '@/components/resource/RelatedResource'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatMeasurement, formatValue } from '@/lib/formatters'
-import { getResourceId } from '@/lib/swapi'
-
-import { RelatedResource, RelatedResourceSkeleton } from '@/components/resource/RelatedResource'
+import { getResourceId, getResourceIds } from '@/lib/swapi'
+import { cn } from '@/lib/utils'
 
 export function PersonDetailPage() {
   const { id } = useParams()
@@ -39,8 +41,7 @@ export function PersonDetailPage() {
 
   const isHomeworldLoading = Boolean(homeworldId) && !homeworld && !isHomeworldError
 
-  const filmIds =
-    person?.films.map(getResourceId).filter((filmId): filmId is string => Boolean(filmId)) ?? []
+  const filmIds = person ? getResourceIds(person.films) : []
 
   const filmQueries = useQueries({
     queries: filmIds.map((filmId) => ({
@@ -53,8 +54,49 @@ export function PersonDetailPage() {
 
   const areFilmsError = filmQueries.length > 0 && filmQueries.some((query) => query.isError)
 
+  const speciesIds = person ? getResourceIds(person.species) : []
+
+  const speciesQueries = useQueries({
+    queries: speciesIds.map((speciesId) => ({
+      queryKey: ['species', 'detail', speciesId],
+      queryFn: ({ signal }) => getSpeciesById(speciesId, signal),
+    })),
+  })
+
+  const species = speciesQueries.flatMap((query) => (query.data ? [query.data] : []))
+
+  const areSpeciesError = speciesQueries.length > 0 && speciesQueries.some((query) => query.isError)
+
+  const vehicleIds = person ? getResourceIds(person.vehicles) : []
+
+  const vehicleQueries = useQueries({
+    queries: vehicleIds.map((vehicleId) => ({
+      queryKey: ['vehicles', 'detail', vehicleId],
+      queryFn: ({ signal }) => getVehicle(vehicleId, signal),
+    })),
+  })
+
+  const vehicles = vehicleQueries.flatMap((query) => (query.data ? [query.data] : []))
+
+  const areVehiclesError =
+    vehicleQueries.length > 0 && vehicleQueries.some((query) => query.isError)
+
+  const starshipIds = person ? getResourceIds(person.starships) : []
+
+  const starshipQueries = useQueries({
+    queries: starshipIds.map((starshipId) => ({
+      queryKey: ['starships', 'detail', starshipId],
+      queryFn: ({ signal }) => getStarship(starshipId, signal),
+    })),
+  })
+
+  const starships = starshipQueries.flatMap((query) => (query.data ? [query.data] : []))
+
+  const areStarshipsError =
+    starshipQueries.length > 0 && starshipQueries.some((query) => query.isError)
+
   return (
-    <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col px-4 py-8 sm:px-6 lg:px-8">
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-8 sm:px-6 lg:px-8">
       <Link to="/people" className={cn(buttonVariants({ variant: 'ghost' }), 'mb-6 self-start')}>
         <ArrowLeft className="size-4" />
         Back to people
@@ -111,32 +153,172 @@ export function PersonDetailPage() {
                 <DetailItem label="Eye color" value={formatValue(person.eye_color)} />
 
                 <DetailItem label="Skin color" value={formatValue(person.skin_color)} />
+              </dl>
 
-                <div className="sm:col-span-2 lg:col-span-3">
-                  <dt className="text-muted-foreground text-sm">Homeworld</dt>
+              <div className="mt-6 grid gap-6 sm:grid-cols-2">
+                <div>
+                  <p className="text-muted-foreground text-sm">Species</p>
 
-                  <dd className="mt-2">
-                    {isHomeworldLoading && <RelatedResourceSkeleton />}
+                  <div className="mt-2 flex flex-col gap-2">
+                    {speciesIds.length === 0 && (
+                      <span className="text-muted-foreground text-sm">—</span>
+                    )}
+
+                    {speciesQueries.map((query, index) => {
+                      const speciesId = speciesIds[index]
+
+                      if (query.isPending) {
+                        return <RelatedResourceSkeleton key={speciesId} className="w-full" />
+                      }
+
+                      if (query.data) {
+                        return (
+                          <RelatedResource
+                            key={query.data.url}
+                            icon={Dna}
+                            label="Species"
+                            name={query.data.name}
+                            className="w-full"
+                          />
+                        )
+                      }
+
+                      return null
+                    })}
+
+                    {areSpeciesError && species.length === 0 && (
+                      <span className="text-muted-foreground text-sm">Unavailable</span>
+                    )}
+                  </div>
+
+                  {areSpeciesError && species.length > 0 && (
+                    <p className="text-muted-foreground mt-2 text-sm">
+                      Some species information could not be loaded.
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <p className="text-muted-foreground text-sm">Homeworld</p>
+
+                  <div className="mt-2">
+                    {isHomeworldLoading && <RelatedResourceSkeleton className="w-full" />}
 
                     {isHomeworldError && (
                       <span className="text-muted-foreground text-sm">Unavailable</span>
                     )}
 
                     {homeworld && (
-                      <RelatedResource icon={Orbit} label="Planet" name={homeworld.name} />
+                      <RelatedResource
+                        icon={Orbit}
+                        label="Planet"
+                        name={homeworld.name}
+                        className="w-full"
+                      />
                     )}
-                  </dd>
+                  </div>
                 </div>
-              </dl>
+              </div>
             </CardContent>
           </Card>
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>Films</CardTitle>
-            </CardHeader>
 
-            <CardContent>
-              {filmQueries.length > 0 && (
+          {vehicleIds.length > 0 && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Vehicles</CardTitle>
+              </CardHeader>
+
+              <CardContent>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {vehicleQueries.map((query, index) => {
+                    const vehicleId = vehicleIds[index]
+
+                    if (query.isPending) {
+                      return <RelatedResourceSkeleton key={vehicleId} />
+                    }
+
+                    if (query.data) {
+                      return (
+                        <RelatedResource
+                          key={query.data.url}
+                          icon={CarFront}
+                          label="Vehicle"
+                          name={query.data.name}
+                        />
+                      )
+                    }
+
+                    return null
+                  })}
+                </div>
+
+                {areVehiclesError && vehicles.length === 0 && (
+                  <p className="text-muted-foreground text-sm">
+                    Vehicle information is currently unavailable.
+                  </p>
+                )}
+
+                {areVehiclesError && vehicles.length > 0 && (
+                  <p className="text-muted-foreground mt-3 text-sm">
+                    Some vehicle information could not be loaded.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {starshipIds.length > 0 && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Starships</CardTitle>
+              </CardHeader>
+
+              <CardContent>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {starshipQueries.map((query, index) => {
+                    const starshipId = starshipIds[index]
+
+                    if (query.isPending) {
+                      return <RelatedResourceSkeleton key={starshipId} />
+                    }
+
+                    if (query.data) {
+                      return (
+                        <RelatedResource
+                          key={query.data.url}
+                          icon={Rocket}
+                          label="Starship"
+                          name={query.data.name}
+                        />
+                      )
+                    }
+
+                    return null
+                  })}
+                </div>
+
+                {areStarshipsError && starships.length === 0 && (
+                  <p className="text-muted-foreground text-sm">
+                    Starship information is currently unavailable.
+                  </p>
+                )}
+
+                {areStarshipsError && starships.length > 0 && (
+                  <p className="text-muted-foreground mt-3 text-sm">
+                    Some starship information could not be loaded.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {filmIds.length > 0 && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Films</CardTitle>
+              </CardHeader>
+
+              <CardContent>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {filmQueries.map((query, index) => {
                     const filmId = filmIds[index]
@@ -160,21 +342,21 @@ export function PersonDetailPage() {
                     return null
                   })}
                 </div>
-              )}
 
-              {areFilmsError && films.length === 0 && (
-                <p className="text-muted-foreground text-sm">
-                  Film information is currently unavailable.
-                </p>
-              )}
+                {areFilmsError && films.length === 0 && (
+                  <p className="text-muted-foreground text-sm">
+                    Film information is currently unavailable.
+                  </p>
+                )}
 
-              {areFilmsError && films.length > 0 && (
-                <p className="text-muted-foreground mt-3 text-sm">
-                  Some film information could not be loaded.
-                </p>
-              )}
-            </CardContent>
-          </Card>
+                {areFilmsError && films.length > 0 && (
+                  <p className="text-muted-foreground mt-3 text-sm">
+                    Some film information could not be loaded.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </>
       )}
     </main>
@@ -190,6 +372,7 @@ function DetailItem({ label, value }: DetailItemProps) {
   return (
     <div>
       <dt className="text-muted-foreground text-sm">{label}</dt>
+
       <dd className="mt-1 font-medium">{value}</dd>
     </div>
   )
@@ -212,13 +395,27 @@ function PersonDetailSkeleton() {
           <Skeleton className="h-6 w-24" />
         </CardHeader>
 
-        <CardContent className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 7 }).map((_, index) => (
-            <div key={index} className="space-y-2">
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-5 w-28" />
+        <CardContent>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 7 }).map((_, index) => (
+              <div key={index} className="space-y-2">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-5 w-28" />
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 grid gap-6 sm:grid-cols-2">
+            <div>
+              <Skeleton className="mb-2 h-4 w-16" />
+              <RelatedResourceSkeleton className="w-full" />
             </div>
-          ))}
+
+            <div>
+              <Skeleton className="mb-2 h-4 w-20" />
+              <RelatedResourceSkeleton className="w-full" />
+            </div>
+          </div>
         </CardContent>
       </Card>
 
