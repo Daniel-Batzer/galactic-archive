@@ -152,6 +152,7 @@ export function PersonDetailPage() {
                           icon={Clapperboard}
                           label={`Episode ${query.data.episode_id}`}
                           name={query.data.title}
+                          to={`/films/${filmId}`}
                         />
                       )
                     }

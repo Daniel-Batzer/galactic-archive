@@ -1,4 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
+import { Link } from 'react-router'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
@@ -10,12 +11,13 @@ type RelatedResourceProps = {
   icon: LucideIcon
   label: string
   name: string
+  to?: string
   className?: string
 }
 
-export function RelatedResource({ icon: Icon, label, name, className }: RelatedResourceProps) {
-  return (
-    <div className={cn('bg-muted/50', relatedResourceClassName, className)}>
+export function RelatedResource({ icon: Icon, label, name, to, className }: RelatedResourceProps) {
+  const content = (
+    <>
       <span
         className="bg-background flex size-8 shrink-0 items-center justify-center rounded-full"
         aria-hidden="true"
@@ -27,8 +29,26 @@ export function RelatedResource({ icon: Icon, label, name, className }: RelatedR
         <p className="text-muted-foreground text-xs">{label}</p>
         <p className="font-medium">{name}</p>
       </div>
-    </div>
+    </>
   )
+
+  const classNames = cn(
+    'bg-muted/50',
+    relatedResourceClassName,
+    to &&
+      'hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 motion-safe:transition-transform motion-safe:duration-200 motion-safe:hover:scale-[1.02]',
+    className,
+  )
+
+  if (to) {
+    return (
+      <Link to={to} className={classNames}>
+        {content}
+      </Link>
+    )
+  }
+
+  return <div className={classNames}>{content}</div>
 }
 
 type RelatedResourceSkeletonProps = {

@@ -1,6 +1,9 @@
 import { Clapperboard } from 'lucide-react'
+import { Link } from 'react-router'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { formatDate } from '@/lib/formatters'
+import { getResourceId } from '@/lib/swapi'
 
 import type { Film } from '@/types/swapi'
 
@@ -9,6 +12,23 @@ type FilmCardProps = {
 }
 
 export function FilmCard({ film }: FilmCardProps) {
+  const filmId = getResourceId(film.url)
+
+  if (!filmId) {
+    return <FilmCardContent film={film} />
+  }
+
+  return (
+    <Link
+      to={`/films/${filmId}`}
+      className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    >
+      <FilmCardContent film={film} />
+    </Link>
+  )
+}
+
+function FilmCardContent({ film }: FilmCardProps) {
   return (
     <Card className="h-full transition-shadow duration-200 hover:shadow-sm motion-safe:transition-transform motion-safe:hover:-translate-y-0.5">
       <CardHeader className="flex flex-row items-center gap-4">
@@ -35,22 +55,10 @@ export function FilmCard({ film }: FilmCardProps) {
 
           <div>
             <dt className="text-muted-foreground">Released</dt>
-            <dd>{formatReleaseDate(film.release_date)}</dd>
+            <dd>{formatDate(film.release_date)}</dd>
           </div>
         </dl>
       </CardContent>
     </Card>
   )
-}
-
-function formatReleaseDate(value: string) {
-  const date = new Date(value)
-
-  return Number.isNaN(date.getTime())
-    ? value
-    : new Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      }).format(date)
 }

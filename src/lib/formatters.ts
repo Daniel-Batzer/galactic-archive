@@ -19,3 +19,15 @@ export function formatMeasurement(value: string, unit: string) {
 
   return formattedValue === '—' ? formattedValue : `${formattedValue} ${unit}`
 }
+
+export function formatDate(value: string) {
+  const date = new Date(value)
+
+  return Number.isNaN(date.getTime())
+    ? value
+    : new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      }).format(date)
+}
