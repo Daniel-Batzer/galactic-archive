@@ -5,6 +5,7 @@ import { HomePage } from '@/pages/HomePage'
 import { PeoplePage } from '@/pages/PeoplePage'
 import { PlanetsPage } from './pages/PlanetsPage'
 import { StarshipsPage } from '@/pages/StarshipsPage'
+import { PersonDetailPage } from './pages/PersonDetailPage'
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Route element={<AppLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/people" element={<PeoplePage />} />
+        <Route path="/people/:id" element={<PersonDetailPage />} />
         <Route path="/planets" element={<PlanetsPage />} />
         <Route path="/starships" element={<StarshipsPage />} />
       </Route>
