@@ -156,3 +156,7 @@
     20px 80px,
     90px 10px;
 }
+
+html {
+  scrollbar-gutter: stable;
+}
