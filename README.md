@@ -17,6 +17,7 @@ The project was developed as a time-boxed frontend coding challenge with a focus
   - Vehicles
 - Search resources using the SWAPI search endpoint
 - Paginated resource lists
+- Total result counts on resource overviews
 - Dedicated detail pages for all resource types
 - Navigation between related resources
 - Person details resolve related:
@@ -28,9 +29,11 @@ The project was developed as a time-boxed frontend coding challenge with a focus
 - Loading skeletons
 - Error and empty states
 - Responsive desktop and mobile navigation
+- Overlay-style mobile navigation without layout shifts
 - Custom 404 page for unsupported routes
 - Keyboard accessible navigation and focus states
 - Reduced-motion aware hover effects
+- Subtle Star Wars inspired visual theming
 
 ## Tech Stack
 
@@ -167,6 +170,8 @@ https://swapi.py4e.com/api
 
 The API base URL can be changed through `VITE_SWAPI_BASE_URL`.
 
+For development, `VITE_SIMULATE_API_ERROR` can be enabled to manually verify error states.
+
 ### Server State
 
 TanStack Query is used for remote server state.
@@ -217,6 +222,7 @@ Examples include:
 - Resource grid skeletons
 - Search
 - Pagination
+- Resource result counts
 - Resource card navigation
 - Detail page layout
 - Detail headers
@@ -292,11 +298,11 @@ This ensures the repository remains buildable and the basic quality checks remai
 
 ## Technical Decisions
 
-### React + Vite Instead of Next.js
+### React + Vite
 
-Although Next.js would also work well for this project, the assignment specifically requested a React application.
+A client-side React application was sufficient for the requirements of this project.
 
-Vite keeps the solution lightweight and avoids adding framework functionality that is not required for this client-side data explorer.
+Vite keeps the setup lightweight and avoids introducing server-side rendering or additional framework functionality that is not required for this data explorer.
 
 ### TanStack Query
 
@@ -345,6 +351,14 @@ For example, resource card navigation and detail page building blocks were extra
 
 This keeps abstractions small and based on actual requirements rather than predicted future requirements.
 
+### Subtle Visual Theming
+
+The application uses a restrained Star Wars inspired visual style rather than attempting to recreate the visual language of the films.
+
+The home page uses a lightweight CSS-based starfield and subtle space-inspired styling while the resource views remain focused on readability and usability.
+
+No additional animation or graphics library was required.
+
 ## Scope and Trade-offs
 
 The challenge suggested a development time of approximately 4–8 hours.
@@ -359,6 +373,7 @@ Within that timebox, priority was given to:
 6. Accessibility
 7. Focused automated tests
 8. Continuous integration
+9. Lightweight visual polish
 
 Some possible features were intentionally left out.
 
@@ -370,12 +385,7 @@ They were therefore not prioritized within the timebox.
 
 ### Elaborate Star Wars Animations
 
-A more heavily themed interface could include:
-
-- Animated stars
-- Background effects
-- Scrolling opening crawls
-- More resource-specific animations
+A more heavily themed interface could include animated starfields, more complex transitions or a scrolling opening crawl.
 
 These were intentionally deprioritized in favor of functionality, responsive behavior and accessibility.
 
@@ -383,7 +393,7 @@ The current motion is deliberately subtle and respects reduced-motion preference
 
 ### Offline / PWA Support
 
-Persistent TanStack Query caching or full PWA functionality could improve offline behavior.
+Persistent query caching or full Progressive Web App functionality could improve offline behavior.
 
 This was considered outside the core scope of the challenge.
 
@@ -391,13 +401,28 @@ This was considered outside the core scope of the challenge.
 
 The application UI could be localized, but SWAPI itself provides English resource data.
 
-Localizing only the application labels while leaving the underlying content untranslated was considered inconsistent for the current scope.
+Localizing only the surrounding application labels while leaving the underlying API content untranslated was considered inconsistent for the current scope.
 
-### Context-Aware Back Navigation
+## Possible Future Improvements
 
-Detail pages currently provide predictable links back to their resource overview.
+Given additional development time, the next steps would focus on deeper resource relationships, navigation context, testing and production-readiness.
 
-A possible future improvement would preserve the exact navigation origin.
+### Richer Resource Relationships
+
+The current application focuses most strongly on related resources in the person detail view.
+
+The same relationship model could be expanded consistently across all detail pages. For example:
+
+- Planets could link to residents and films
+- Films could link to characters, planets, species, vehicles and starships
+- Species could link to people, films and homeworlds
+- Vehicles and starships could link to pilots and films
+
+The existing shared related-resource components already provide a foundation for this.
+
+### Context-Aware Navigation
+
+Navigation could preserve the user's origin when moving between related resources.
 
 For example:
 
@@ -407,28 +432,35 @@ Luke Skywalker
 → Back to Luke Skywalker
 ```
 
-while still falling back to the planets overview when a detail page is opened directly.
+Directly opened detail URLs would still fall back to the relevant resource overview.
 
-### Resource-Specific 404 States
+### Improved API Error Handling
 
-Unsupported application routes have a dedicated 404 page.
+The API client could expose typed HTTP errors so that missing resources, network failures and server errors can be handled independently.
 
-Individual missing SWAPI resources currently use the standard API error state.
+This would allow resource-specific `404 Not Found` states rather than treating every failed request as a generic API error.
 
-A future improvement could expose HTTP status codes through the API client and provide resource-specific `not found` states.
+### Additional Integration Testing
 
-## Possible Future Improvements
+Further tests could cover:
 
-Given additional development time, possible next steps would include:
+- Pagination
+- Error and retry flows
+- URL synchronization for search and pagination
+- Related resource loading
+- Mobile navigation
+- Direct detail-page navigation
+- Empty search results
 
-- Context-aware back navigation
-- Resource result counts in overview pages
-- Persisted TanStack Query caching
-- Additional integration tests
-- More detailed visual theming
-- Resource-specific 404 handling
-- Optional deployment as a PWA
-- Additional relationship navigation between resource detail pages
+### Production Hardening
+
+For a production deployment, additional work could include:
+
+- Error and performance monitoring
+- Automated accessibility checks
+- Deployment previews
+- Persistent query caching
+- Optional PWA support
 
 ## Time Spent
 
