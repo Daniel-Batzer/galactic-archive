@@ -178,6 +178,7 @@ export function PersonDetailPage() {
                             icon={Dna}
                             label="Species"
                             name={query.data.name}
+                            to={`/species/${speciesId}`}
                             className="w-full"
                           />
                         )
@@ -213,6 +214,7 @@ export function PersonDetailPage() {
                         icon={Orbit}
                         label="Planet"
                         name={homeworld.name}
+                        to={`/planets/${homeworldId}`}
                         className="w-full"
                       />
                     )}
@@ -244,6 +246,7 @@ export function PersonDetailPage() {
                           icon={CarFront}
                           label="Vehicle"
                           name={query.data.name}
+                          to={`/vehicles/${vehicleId}`}
                         />
                       )
                     }
@@ -289,6 +292,7 @@ export function PersonDetailPage() {
                           icon={Rocket}
                           label="Starship"
                           name={query.data.name}
+                          to={`/starships/${starshipId}`}
                         />
                       )
                     }

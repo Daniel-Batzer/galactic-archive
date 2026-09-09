@@ -1,9 +1,9 @@
 import { Orbit } from 'lucide-react'
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatMeasurement, formatNumber, formatValue } from '@/lib/formatters'
 
 import type { Planet } from '@/types/swapi'
+import { ResourceCardLink } from '../resource/ResourceCardLink'
 
 type PlanetCardProps = {
   planet: Planet
@@ -11,7 +11,15 @@ type PlanetCardProps = {
 
 export function PlanetCard({ planet }: PlanetCardProps) {
   return (
-    <Card className="transition-shadow duration-200 hover:shadow-sm motion-safe:transition-transform motion-safe:hover:-translate-y-0.5">
+    <ResourceCardLink url={planet.url} basePath="/planets">
+      <PlanetCardContent planet={planet} />
+    </ResourceCardLink>
+  )
+}
+
+function PlanetCardContent({ planet }: PlanetCardProps) {
+  return (
+    <Card className="h-full transition-shadow duration-200 hover:shadow-sm motion-safe:transition-transform motion-safe:hover:-translate-y-0.5">
       <CardHeader className="flex flex-row items-center gap-4">
         <div
           className="bg-muted flex size-12 shrink-0 items-center justify-center rounded-full"
@@ -20,7 +28,11 @@ export function PlanetCard({ planet }: PlanetCardProps) {
           <Orbit className="size-6" />
         </div>
 
-        <CardTitle>{planet.name}</CardTitle>
+        <div className="min-w-0">
+          <CardTitle>{planet.name}</CardTitle>
+
+          <p className="text-muted-foreground mt-1 text-sm">{formatValue(planet.climate)}</p>
+        </div>
       </CardHeader>
 
       <CardContent>

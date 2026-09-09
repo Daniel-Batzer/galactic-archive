@@ -1,5 +1,6 @@
 import { Dna } from 'lucide-react'
 
+import { ResourceCardLink } from '@/components/resource/ResourceCardLink'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatMeasurement, formatValue } from '@/lib/formatters'
 
@@ -10,6 +11,14 @@ type SpeciesCardProps = {
 }
 
 export function SpeciesCard({ species }: SpeciesCardProps) {
+  return (
+    <ResourceCardLink url={species.url} basePath="/species">
+      <SpeciesCardContent species={species} />
+    </ResourceCardLink>
+  )
+}
+
+function SpeciesCardContent({ species }: SpeciesCardProps) {
   return (
     <Card className="h-full transition-shadow duration-200 hover:shadow-sm motion-safe:transition-transform motion-safe:hover:-translate-y-0.5">
       <CardHeader className="flex flex-row items-center gap-4">

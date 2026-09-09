@@ -1,9 +1,8 @@
 import { Clapperboard } from 'lucide-react'
-import { Link } from 'react-router'
 
+import { ResourceCardLink } from '@/components/resource/ResourceCardLink'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatDate } from '@/lib/formatters'
-import { getResourceId } from '@/lib/swapi'
 
 import type { Film } from '@/types/swapi'
 
@@ -12,19 +11,10 @@ type FilmCardProps = {
 }
 
 export function FilmCard({ film }: FilmCardProps) {
-  const filmId = getResourceId(film.url)
-
-  if (!filmId) {
-    return <FilmCardContent film={film} />
-  }
-
   return (
-    <Link
-      to={`/films/${filmId}`}
-      className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-    >
+    <ResourceCardLink url={film.url} basePath="/films">
       <FilmCardContent film={film} />
-    </Link>
+    </ResourceCardLink>
   )
 }
 

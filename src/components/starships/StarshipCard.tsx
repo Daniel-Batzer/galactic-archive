@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatNumber, formatValue } from '@/lib/formatters'
 
 import type { Starship } from '@/types/swapi'
+import { ResourceCardLink } from '../resource/ResourceCardLink'
 
 type StarshipCardProps = {
   starship: Starship
@@ -11,7 +12,15 @@ type StarshipCardProps = {
 
 export function StarshipCard({ starship }: StarshipCardProps) {
   return (
-    <Card className="transition-shadow duration-200 hover:shadow-sm motion-safe:transition-transform motion-safe:hover:-translate-y-0.5">
+    <ResourceCardLink url={starship.url} basePath="/starships">
+      <StarshipCardContent starship={starship} />
+    </ResourceCardLink>
+  )
+}
+
+function StarshipCardContent({ starship }: StarshipCardProps) {
+  return (
+    <Card className="h-full transition-shadow duration-200 hover:shadow-sm motion-safe:transition-transform motion-safe:hover:-translate-y-0.5">
       <CardHeader className="flex flex-row items-center gap-4">
         <div
           className="bg-muted flex size-12 shrink-0 items-center justify-center rounded-full"
@@ -23,9 +32,7 @@ export function StarshipCard({ starship }: StarshipCardProps) {
         <div className="min-w-0">
           <CardTitle>{starship.name}</CardTitle>
 
-          <p className="text-muted-foreground mt-1 truncate text-sm">
-            {formatValue(starship.model)}
-          </p>
+          <p className="text-muted-foreground mt-1 text-sm">{formatValue(starship.model)}</p>
         </div>
       </CardHeader>
 

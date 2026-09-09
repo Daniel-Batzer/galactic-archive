@@ -1,5 +1,6 @@
 import { CarFront } from 'lucide-react'
 
+import { ResourceCardLink } from '@/components/resource/ResourceCardLink'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatMeasurement, formatNumber, formatValue } from '@/lib/formatters'
 
@@ -10,6 +11,14 @@ type VehicleCardProps = {
 }
 
 export function VehicleCard({ vehicle }: VehicleCardProps) {
+  return (
+    <ResourceCardLink url={vehicle.url} basePath="/vehicles">
+      <VehicleCardContent vehicle={vehicle} />
+    </ResourceCardLink>
+  )
+}
+
+function VehicleCardContent({ vehicle }: VehicleCardProps) {
   return (
     <Card className="h-full transition-shadow duration-200 hover:shadow-sm motion-safe:transition-transform motion-safe:hover:-translate-y-0.5">
       <CardHeader className="flex flex-row items-center gap-4">
