@@ -59,12 +59,12 @@ export function FilmDetailPage() {
           />
 
           <Card className="mt-6">
-            <CardHeader>
+            <CardHeader className="text-center">
               <CardTitle>Opening crawl</CardTitle>
             </CardHeader>
 
             <CardContent>
-              <p className="text-muted-foreground whitespace-pre-line leading-7">
+              <p className="text-muted-foreground mx-auto max-w-3xl whitespace-pre-line text-center leading-8">
                 {film.opening_crawl}
               </p>
             </CardContent>
